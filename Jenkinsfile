@@ -17,19 +17,40 @@ pipeline {
             }
         }
 
+        stages {
+        stage('Clone GitHub Repo') {
+            steps {
+                script {
+                    echo 'Cloning GitHub repo to Jenkins...'
+                    checkout scmGit(
+                        branches: [[name: '*/main']], 
+                        extensions: [], 
+                        userRemoteConfigs: [[credentialsId: 'token-rag-med-bot', url: 'https://github.com/amaithi-sam/rag-medical-chatbot-end-to-end.git']]
+                    )
+                }
+            }
+        } 
+
         stage('Build, Scan, and Push Docker Image to ECR') {
             steps {
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-token']]) {
                     script {
                         def accountId = sh(script: "aws sts get-caller-identity --query Account --output text", returnStdout: true).trim()
+                        
+                    
                         def ecrUrl = "${accountId}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.ECR_REPO}"
-                        def imageFullTag = "${ecrUrl}:${IMAGE_TAG}"
+                        def imageFullTag = "${ecrUrl}:${env.IMAGE_TAG}"
 
                         sh """
-                        aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ecrUrl}
-                        docker build -t ${env.ECR_REPO}:${IMAGE_TAG} .
-                        trivy image --severity HIGH,CRITICAL --format json -o trivy-report.json ${env.ECR_REPO}:${IMAGE_TAG} || true
-                        docker tag ${env.ECR_REPO}:${IMAGE_TAG} ${imageFullTag}
+                        # Fixed variable reference to match environment syntax (env.AWS_REGION)
+                        aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${ecrUrl}
+                        
+                        docker build -t ${env.ECR_REPO}:${env.IMAGE_TAG} .
+                        
+                        # Added '|| true' to ensure pipeline continues even if vulnerabilities are found (optional)
+                        trivy image --severity HIGH,CRITICAL --format json -o trivy-report.json ${env.ECR_REPO}:${env.IMAGE_TAG} || true
+                        
+                        docker tag ${env.ECR_REPO}:${env.IMAGE_TAG} ${imageFullTag}
                         docker push ${imageFullTag}
                         """
 
@@ -38,6 +59,8 @@ pipeline {
                 }
             }
         }
+    }
+}
 
         //  stage('Deploy to AWS App Runner') {
         //     steps {
@@ -58,6 +81,6 @@ pipeline {
         //             }
         //         }
         //     }
-        }
+        // }
     }
 }
