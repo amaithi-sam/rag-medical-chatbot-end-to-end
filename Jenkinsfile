@@ -33,6 +33,7 @@ pipeline {
                         
                         def ecrUrl = "${accountId}.dkr.ecr.${env.AWS_REGION}.amazonaws.com/${env.ECR_REPO}"
                         def imageFullTag = "${ecrUrl}:${env.IMAGE_TAG}"
+                        def imageFullTag = "${ecrUrl}:${env.IMAGE_TAG}"
 
                         sh """
                         aws ecr get-login-password --region ${env.AWS_REGION} | docker login --username AWS --password-stdin ${ecrUrl}
