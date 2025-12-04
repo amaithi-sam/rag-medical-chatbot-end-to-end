@@ -211,3 +211,6 @@ venv
 logs/
 test.py 
 vectorstore
+.vscode/settings.json
+app/data/The_GALE_ENCYCLOPEDIA_of_MEDICINE_SECOND.pdf
+app/templates/__init__.py
