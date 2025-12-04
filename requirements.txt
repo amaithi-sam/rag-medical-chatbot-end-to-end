@@ -1,8 +1,11 @@
 langchain
 langchain_community
 langchain_huggingface
-faiss_cpu
+langchain_groq
+faiss-cpu
 pypdf
 huggingface_hub
 flask
-python_dotenv
+python-dotenv
+sentence-transformers
+huggingface_hub[hf_xet]

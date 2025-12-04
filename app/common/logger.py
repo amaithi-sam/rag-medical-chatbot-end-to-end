@@ -13,10 +13,20 @@ LOG_FILE = os.path.join(LOGS_DIR, f"log_{datetime.now().strftime('%Y-%m-%d')}.lo
 logging.basicConfig(
     filename=LOG_FILE,
     format = '%(asctime)s - %(levelname)s - %(message)s',
-    level = logging.INFO
+    level = logging.INFO,
+    
 )
+
+
+# def get_logger(name):
+#     logger = logging.getLogger(name)
+#     logger.setLevel(logging.INFO)
+#     logger.addHandler(logging.StreamHandler)
+#     return logger
 
 def get_logger(name):
     logger = logging.getLogger(name)
     logger.setLevel(logging.INFO)
+    if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
+        logger.addHandler(logging.StreamHandler())
     return logger
