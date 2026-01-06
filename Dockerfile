@@ -1,5 +1,7 @@
 ## Parent image
-FROM python:3.12.12-alpine3.23
+# FROM python:3.12.12-alpine3.23
+FROM python:3.12.12-slim
+
 
 ## Essential environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
