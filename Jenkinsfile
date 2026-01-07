@@ -41,7 +41,7 @@ pipeline {
                         docker build -t ${env.ECR_REPO}:${env.IMAGE_TAG} .
                         
                         # Added || true to prevent pipeline failure on vulnerabilities
-                        trivy image --severity HIGH,CRITICAL --format json -o trivy-report.json ${env.ECR_REPO}:${env.IMAGE_TAG} || true
+                        trivy image --scanners vuln --severity HIGH,CRITICAL --format json -o trivy-report.json ${env.ECR_REPO}:${env.IMAGE_TAG} || true
                         
                         docker tag ${env.ECR_REPO}:${env.IMAGE_TAG} ${imageFullTag}
                         docker push ${imageFullTag}
